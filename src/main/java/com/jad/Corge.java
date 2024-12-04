@@ -1,14 +1,34 @@
 package com.jad;
-
 public class Corge {
-    public Corge(final Foo foo) {
+    private Foo foo;
+
+    // Constructeur
+    public Corge(Foo foo) {
+        this.foo = null; // Initialise à null pour éviter les boucles immédiates
+        if (foo != null) {
+            foo.setCorge(this); // Met à jour la relation bidirectionnelle
+        }
     }
 
+    // Getter et Setter pour Foo
     public Foo getFoo() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return foo;
     }
 
-    public void setFoo(final Foo foo) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void setFoo(Foo newFoo) {
+        if (this.foo == newFoo) {
+            return; // Empêche les appels redondants
+        }
+        // Supprime la référence à l'ancien Foo
+        if (this.foo != null) {
+            Foo oldFoo = this.foo;
+            this.foo = null; // Évite les appels redondants
+            oldFoo.setCorge(null);
+        }
+        // Met à jour la référence au nouveau Foo
+        this.foo = newFoo;
+        if (newFoo != null && newFoo.getCorge() != this) {
+            newFoo.setCorge(this);
+        }
     }
 }
