@@ -1,34 +1,44 @@
 package com.jad;
+
 public class Corge {
+
+    // On retire 'final' car 'foo' peut être changé (mis à null)
     private Foo foo;
 
-    // Constructeur
+    // 1. Constructeur (Corrigé)
     public Corge(Foo foo) {
-        this.foo = null; // Initialise à null pour éviter les boucles immédiates
+        // On assigne le foo
+        this.foo = foo;
+
+        // Et on dit au 'foo' de nous adopter (ce qui cassera son ancien lien)
         if (foo != null) {
-            foo.setCorge(this); // Met à jour la relation bidirectionnelle
+            foo.setCorge(this);
         }
     }
 
-    // Getter et Setter pour Foo
+    // 2. Getter (inchangé)
     public Foo getFoo() {
-        return foo;
+        return this.foo;
     }
 
-    public void setFoo(Foo newFoo) {
-        if (this.foo == newFoo) {
-            return; // Empêche les appels redondants
+    // 3. Setter public (pour le test à la ligne 68)
+    public void setFoo(Foo foo) {
+        if (foo != null) {
+            // Si on nous donne un foo, on dit à ce foo de nous adopter
+            foo.setCorge(this);
+        } else if (this.foo != null) {
+            // Si on nous met à null, on dit à notre ancien foo de nous oublier
+            this.foo.setCorge(null);
         }
-        // Supprime la référence à l'ancien Foo
-        if (this.foo != null) {
-            Foo oldFoo = this.foo;
-            this.foo = null; // Évite les appels redondants
-            oldFoo.setCorge(null);
-        }
-        // Met à jour la référence au nouveau Foo
-        this.foo = newFoo;
-        if (newFoo != null && newFoo.getCorge() != this) {
-            newFoo.setCorge(this);
-        }
+    }
+
+    /**
+     * C'EST LA MÉTHODE MANQUANTE !
+     * Setter interne (visibilité "package-private", pas de 'public').
+     * Seule la classe Foo (qui est dans le même package) a le droit d'appeler cette méthode.
+     * Ça évite les boucles infinies de setters.
+     */
+    void internalSetFoo(Foo foo) {
+        this.foo = foo;
     }
 }
